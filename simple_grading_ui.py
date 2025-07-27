@@ -9,6 +9,10 @@ import json
 from flask import Flask, render_template, request, jsonify
 from pinecone import Pinecone, ServerlessSpec
 from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (for local development)
+load_dotenv()
 
 # Get environment variables (works both locally and on Render)
 PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')

@@ -19,6 +19,10 @@ import numpy as np
 from pinecone import Pinecone, ServerlessSpec
 from openai import OpenAI
 import PyPDF2
+from dotenv import load_dotenv
+
+# Load environment variables from .env file (for local development)
+load_dotenv()
 
 # Add backend to path for integration
 sys.path.append(os.path.join(os.path.dirname(__file__), 'backend'))
