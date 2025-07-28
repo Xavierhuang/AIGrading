@@ -23,10 +23,28 @@ app = Flask(__name__)
 
 class RAGGradingSystem:
     def __init__(self):
-        self.pc = Pinecone(api_key=PINECONE_API_KEY)
-        self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
-        self.index_name = "aiprofessors"
-        
+        try:
+            # Initialize Pinecone client with explicit configuration for serverless
+            import pinecone
+            # Try different initialization patterns
+            try:
+                self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
+            except TypeError as e:
+                if "proxies" in str(e):
+                    # Fallback to older initialization pattern
+                    self.pc = pinecone.init(api_key=PINECONE_API_KEY)
+                else:
+                    raise e
+            self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
+            self.index_name = "aiprofessors"
+            print("✅ Pinecone and OpenAI clients initialized successfully")
+        except Exception as e:
+            print(f"❌ Failed to initialize clients: {e}")
+            print(f"❌ Error type: {type(e).__name__}")
+            import traceback
+            print(f"❌ Full traceback: {traceback.format_exc()}")
+            raise e
+    
     def search_with_existing_index(self, query: str, top_k: int = 8) -> list:
         """Search using the existing index with hosted embedding model"""
         try:
