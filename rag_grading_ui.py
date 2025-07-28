@@ -173,10 +173,14 @@ Be fair but rigorous. A grade of A should be for excellent answers, B for good, 
 grading_system = None
 if PINECONE_API_KEY and OPENAI_API_KEY:
     try:
+        print("🔧 Attempting to initialize RAGGradingSystem...")
         grading_system = RAGGradingSystem()
         print("✅ RAG Grading System initialized successfully")
     except Exception as e:
         print(f"❌ Failed to initialize RAG system: {e}")
+        print(f"❌ Error type: {type(e).__name__}")
+        import traceback
+        print(f"❌ Full traceback: {traceback.format_exc()}")
         grading_system = None
 else:
     print("⚠️ Warning: Missing API keys. Grading functionality will be limited.")
@@ -217,6 +221,35 @@ def debug():
         "openai_key_start": OPENAI_API_KEY[:10] + "..." if OPENAI_API_KEY else "None",
         "grading_system_initialized": grading_system is not None
     })
+
+# Test initialization endpoint
+@app.route('/test-init')
+def test_init():
+    """Test endpoint to try initializing the grading system"""
+    try:
+        if PINECONE_API_KEY and OPENAI_API_KEY:
+            test_system = RAGGradingSystem()
+            return jsonify({
+                "success": True,
+                "message": "Grading system initialized successfully",
+                "pinecone_connected": True,
+                "openai_connected": True
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": "Missing API keys",
+                "pinecone_api_key_set": bool(PINECONE_API_KEY),
+                "openai_api_key_set": bool(OPENAI_API_KEY)
+            })
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Initialization failed: {str(e)}",
+            "error_type": type(e).__name__,
+            "pinecone_api_key_set": bool(PINECONE_API_KEY),
+            "openai_api_key_set": bool(OPENAI_API_KEY)
+        })
 
 # Main grading endpoint
 @app.route('/grade', methods=['POST'])
