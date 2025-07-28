@@ -1,122 +1,82 @@
-# 🚀 Deploy Your AI Grading System Live
+# Deployment Guide
 
-## 🎯 Quick Deploy to Render (Recommended)
+## Render Deployment
 
-### Step 1: Prepare Your Code
-Your code is already ready! The files are configured for deployment.
+This project is configured for deployment on Render using the `render.yaml` configuration file.
 
-### Step 2: Create GitHub Repository
-1. Go to [GitHub](https://github.com)
-2. Click "New repository"
-3. Name it: `ai-grading-system`
-4. Make it **Public** (required for free Render)
-5. Upload your files:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin https://github.com/YOUR_USERNAME/ai-grading-system.git
-   git push -u origin main
-   ```
+### Automatic Deployment
 
-### Step 3: Deploy to Render
-1. Go to [Render](https://render.com)
-2. Sign up with GitHub
-3. Click "New +" → "Web Service"
-4. Connect your GitHub repository
-5. Configure:
-   - **Name**: `ai-grading-system`
-   - **Environment**: `Python`
-   - **Build Command**: `pip install -r requirements.txt`
-   - **Start Command**: `python simple_grading_ui.py`
-6. Add Environment Variables:
+1. **Connect to GitHub**: Link your GitHub repository to Render
+2. **Environment Variables**: Set the following in your Render dashboard:
    - `PINECONE_API_KEY`: Your Pinecone API key
    - `OPENAI_API_KEY`: Your OpenAI API key
-7. Click "Create Web Service"
+3. **Deploy**: Render will automatically deploy when you push to the `main` branch
 
-### Step 4: Wait for Deployment
-- Build time: ~2-3 minutes
-- Your app will be live at: `https://ai-grading-system.onrender.com`
+### Manual Deployment Steps
 
-## 🌐 Alternative: Railway Deployment
+1. **Fork/Clone the Repository**:
+   ```bash
+   git clone https://github.com/yourusername/AIGrading.git
+   cd AIGrading
+   ```
 
-### Step 1: Deploy to Railway
-1. Go to [Railway](https://railway.app)
-2. Sign up with GitHub
-3. Click "New Project" → "Deploy from GitHub repo"
-4. Select your repository
-5. Add environment variables:
-   - `PINECONE_API_KEY`
-   - `OPENAI_API_KEY`
-6. Deploy!
+2. **Set Environment Variables**:
+   ```bash
+   export PINECONE_API_KEY="your_pinecone_api_key"
+   export OPENAI_API_KEY="your_openai_api_key"
+   ```
 
-## ☁️ Alternative: Heroku Deployment
+3. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Step 1: Create Heroku App
+4. **Run Locally** (for testing):
+   ```bash
+   python rag_grading_ui.py
+   ```
+
+### Deployment Configuration
+
+The `render.yaml` file configures:
+- **Service Type**: Web service
+- **Environment**: Python 3.12.0
+- **Build Command**: `pip install -r requirements.txt`
+- **Start Command**: `python rag_grading_ui.py`
+- **Port**: Automatically detected by Render
+
+### Environment Variables Required
+
+- `PINECONE_API_KEY`: For vector database access
+- `OPENAI_API_KEY`: For LLM processing
+- `PYTHON_VERSION`: Set to 3.12.0 (configured in render.yaml)
+
+### Updating Deployment
+
+1. **Make Changes**: Edit your local files
+2. **Commit Changes**: `git add . && git commit -m "Update message"`
+3. **Push to GitHub**: `git push origin main`
+4. **Auto-Deploy**: Render will automatically redeploy
+
+### Troubleshooting
+
+- **Build Failures**: Check the build logs in Render dashboard
+- **Runtime Errors**: Check the service logs
+- **Environment Variables**: Ensure all required API keys are set
+- **Port Issues**: Render automatically handles port configuration
+
+### Local Development
+
+For local development, use:
 ```bash
-# Install Heroku CLI
-brew install heroku/brew/heroku
-
-# Login to Heroku
-heroku login
-
-# Create app
-heroku create your-ai-grading-app
-
-# Set environment variables
-heroku config:set PINECONE_API_KEY=your_key
-heroku config:set OPENAI_API_KEY=your_key
-
-# Deploy
-git push heroku main
+python rag_grading_ui.py
 ```
 
-## 🐳 Alternative: Fly.io Deployment
+The application will be available at `http://localhost:5002`
 
-### Step 1: Install Fly CLI
-```bash
-curl -L https://fly.io/install.sh | sh
-```
+### Production Considerations
 
-### Step 2: Deploy
-```bash
-fly launch
-fly deploy
-```
-
-## 🔧 Environment Variables
-
-Make sure to set these in your deployment platform:
-
-```
-PINECONE_API_KEY=your_pinecone_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-```
-
-## 🎉 Success!
-
-Once deployed, your AI grading system will be live and accessible to anyone with the URL!
-
-### Features Available Online:
-- ✅ **Web UI**: Beautiful grading interface
-- ✅ **AI Grading**: GPT-4 powered analysis
-- ✅ **RAG Integration**: Pinecone search
-- ✅ **Real-time**: Instant grading results
-- ✅ **Mobile-friendly**: Works on all devices
-
-## 📊 Monitoring
-
-- **Render**: Built-in logs and monitoring
-- **Railway**: Real-time logs and metrics
-- **Heroku**: Application logs and dyno metrics
-- **Fly.io**: Global deployment with edge locations
-
-## 🔒 Security Notes
-
-- ✅ **Environment Variables**: API keys are secure
-- ✅ **HTTPS**: All platforms provide SSL
-- ✅ **No Database**: No sensitive data stored
-- ✅ **Stateless**: Each request is independent
-
-Your AI grading system is now ready for production use! 🎓✨ 
+- **Security**: Ensure API keys are properly secured
+- **Scaling**: Render automatically handles scaling
+- **Monitoring**: Use Render's built-in monitoring tools
+- **Backups**: Regularly backup your Pinecone index data 
