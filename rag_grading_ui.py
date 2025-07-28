@@ -26,12 +26,18 @@ class RAGGradingSystem:
         try:
             # Initialize Pinecone client with explicit configuration for serverless
             import pinecone
+            import pkg_resources
+            pinecone_version = pkg_resources.get_distribution("pinecone").version
+            print(f"🔍 Pinecone version: {pinecone_version}")
+            
             # Try different initialization patterns
             try:
                 self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
+                print("✅ Used pinecone.Pinecone() initialization")
             except TypeError as e:
                 if "proxies" in str(e):
                     # Fallback to older initialization pattern
+                    print("⚠️ Falling back to pinecone.init() initialization")
                     self.pc = pinecone.init(api_key=PINECONE_API_KEY)
                 else:
                     raise e
@@ -267,6 +273,38 @@ def test_init():
             "error_type": type(e).__name__,
             "pinecone_api_key_set": bool(PINECONE_API_KEY),
             "openai_api_key_set": bool(OPENAI_API_KEY)
+        })
+
+# Version endpoint
+@app.route('/version')
+def version():
+    """Check Pinecone version and initialization"""
+    try:
+        import pinecone
+        import pkg_resources
+        pinecone_version = pkg_resources.get_distribution("pinecone").version
+        
+        # Try to initialize Pinecone
+        try:
+            pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
+            init_method = "pinecone.Pinecone()"
+        except TypeError as e:
+            if "proxies" in str(e):
+                pc = pinecone.init(api_key=PINECONE_API_KEY)
+                init_method = "pinecone.init()"
+            else:
+                raise e
+        
+        return jsonify({
+            "pinecone_version": pinecone_version,
+            "init_method": init_method,
+            "api_keys_set": bool(PINECONE_API_KEY and OPENAI_API_KEY)
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "error_type": type(e).__name__,
+            "pinecone_version": "unknown"
         })
 
 # Main grading endpoint
