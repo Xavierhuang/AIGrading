@@ -525,6 +525,16 @@ HTML_TEMPLATE = """
 def index():
     return render_template_string(HTML_TEMPLATE)
 
+@app.route('/health')
+def health():
+    """Health check endpoint for debugging"""
+    return jsonify({
+        "status": "healthy",
+        "grading_system_initialized": grading_system is not None,
+        "pinecone_api_key_set": bool(PINECONE_API_KEY),
+        "openai_api_key_set": bool(OPENAI_API_KEY)
+    })
+
 @app.route('/grade', methods=['POST'])
 def grade():
     try:
