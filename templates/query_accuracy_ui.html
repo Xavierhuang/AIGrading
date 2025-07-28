@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Query Accuracy Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .search-section {
+            margin-bottom: 40px;
+        }
+        
+        .search-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .search-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 15px;
+            align-items: end;
+        }
+        
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: translateY(-2px);
+        }
+        
+        .button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .results-section {
+            margin-top: 40px;
+            display: none;
+        }
+        
+        .results-section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+        
+        .accuracy-summary {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .accuracy-score {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .accuracy-assessment {
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .results-list {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .result-rank {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+        }
+        
+        .result-score {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .result-content {
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .accuracy-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        
+        .relevance-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .relevance-score {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .sample-queries {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .sample-queries h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .sample-queries ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        .sample-queries li {
+            padding: 5px 0;
+            cursor: pointer;
+            color: #667eea;
+        }
+        
+        .sample-queries li:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔍 Query Accuracy Test</h1>
+            <p>Test the accuracy of RAG queries against your textbook and grading rubric</p>
+        </div>
+        
+        <div class="content">
+            <div class="search-section">
+                <h2>📝 Search Query</h2>
+                <div class="form-group">
+                    <div class="search-row">
+                        <div>
+                            <label for="query">Enter your query:</label>
+                            <input type="text" id="query" placeholder="e.g., What is utilitarianism?">
+                        </div>
+                        <div>
+                            <button class="button" onclick="searchQuery()" id="searchBtn">
+                                🔍 Find Best Answer
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="sample-queries">
+                    <h4>💡 Sample Queries to Test</h4>
+                    <ul>
+                        <li onclick="setQuery('What is utilitarianism?')">What is utilitarianism?</li>
+                        <li onclick="setQuery('Explain rights theory in ethics')">Explain rights theory in ethics</li>
+                        <li onclick="setQuery('What is the difference between honesty and fidelity?')">What is the difference between honesty and fidelity?</li>
+                        <li onclick="setQuery('How to grade short answer questions')">How to grade short answer questions</li>
+                        <li onclick="setQuery('Essay grading criteria for ethics')">Essay grading criteria for ethics</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <h2>📊 Best Answer & Accuracy Analysis</h2>
+                
+                <div class="loading" id="loading">
+                    <div class="spinner"></div>
+                    <p>Finding the best answer and analyzing accuracy...</p>
+                </div>
+                
+                <div id="searchResults" style="display: none;">
+                    <div class="accuracy-summary">
+                        <div>
+                            <span class="accuracy-score" id="accuracyScore">-</span>
+                            <span style="font-size: 1.2em; color: #666;">/ 1.0</span>
+                        </div>
+                        <div class="accuracy-assessment" id="accuracyAssessment">-</div>
+                    </div>
+                    
+                    <div class="results-grid">
+                        <div class="results-list">
+                            <h3>📋 Best Answer</h3>
+                            <div id="resultsList"></div>
+                        </div>
+                        
+                        <div class="accuracy-details">
+                            <h3>🎯 Accuracy Analysis</h3>
+                            <div id="accuracyDetails"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function setQuery(query) {
+            document.getElementById('query').value = query;
+        }
+        
+        async function searchQuery() {
+            const query = document.getElementById('query').value.trim();
+            
+            if (!query) {
+                alert('Please enter a query to search.');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('resultsSection').style.display = 'block';
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('searchBtn').textContent = '⏳ Finding Best Answer...';
+            
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        query: query
+                    })
+                });
+                
+                const result = await response.json();
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('searchResults').style.display = 'block';
+                
+                if (result.error) {
+                    document.getElementById('searchResults').innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error</h3>
+                            <p>${result.error}</p>
+                        </div>
+                    `;
+                } else {
+                    // Display accuracy summary
+                    const analysis = result.accuracy_analysis;
+                    if (analysis.overall_relevance_score !== undefined) {
+                        document.getElementById('accuracyScore').textContent = (analysis.overall_relevance_score * 100).toFixed(0) + '%';
+                    }
+                    if (analysis.accuracy_assessment) {
+                        document.getElementById('accuracyAssessment').textContent = analysis.accuracy_assessment;
+                    }
+                    
+                    // Display results
+                    displayResults(result.results);
+                    displayAccuracyDetails(analysis);
+                }
+                
+            } catch (error) {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('searchResults').innerHTML = `
+                    <div class="error">
+                        <h3>❌ Error</h3>
+                        <p>Failed to search: ${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                document.getElementById('searchBtn').disabled = false;
+                document.getElementById('searchBtn').textContent = '🔍 Find Best Answer';
+            }
+        }
+        
+        function displayResults(results) {
+            const container = document.getElementById('resultsList');
+            container.innerHTML = '';
+            
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'result-item';
+                div.innerHTML = `
+                    <div class="result-header">
+                        <span class="result-rank">#${result.rank}</span>
+                        <span class="result-score">Score: ${(result.score * 100).toFixed(1)}%</span>
+                    </div>
+                    <div class="result-content">${result.content}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function displayAccuracyDetails(analysis) {
+            const container = document.getElementById('accuracyDetails');
+            container.innerHTML = '';
+            
+            if (analysis.error) {
+                container.innerHTML = `<p class="error">${analysis.error}</p>`;
+                return;
+            }
+            
+            // Display confidence level if available
+            if (analysis.confidence_level) {
+                const confidenceDiv = document.createElement('div');
+                confidenceDiv.className = 'relevance-item';
+                confidenceDiv.innerHTML = `
+                    <div><strong>Confidence Level:</strong> ${analysis.confidence_level.toUpperCase()}</div>
+                `;
+                container.appendChild(confidenceDiv);
+            }
+            
+            // Display result quality if available
+            if (analysis.result_quality) {
+                const qualityDiv = document.createElement('div');
+                qualityDiv.className = 'relevance-item';
+                qualityDiv.innerHTML = `
+                    <div><strong>Result Quality:</strong> ${analysis.result_quality.toUpperCase()}</div>
+                `;
+                container.appendChild(qualityDiv);
+            }
+            
+            // Display completeness score if available
+            if (analysis.completeness_score !== undefined) {
+                const completenessDiv = document.createElement('div');
+                completenessDiv.className = 'relevance-item';
+                completenessDiv.innerHTML = `
+                    <div><strong>Completeness:</strong> ${(analysis.completeness_score * 100).toFixed(0)}%</div>
+                `;
+                container.appendChild(completenessDiv);
+            }
+            
+            // Display specificity score if available
+            if (analysis.specificity_score !== undefined) {
+                const specificityDiv = document.createElement('div');
+                specificityDiv.className = 'relevance-item';
+                specificityDiv.innerHTML = `
+                    <div><strong>Specificity:</strong> ${(analysis.specificity_score * 100).toFixed(0)}%</div>
+                `;
+                container.appendChild(specificityDiv);
+            }
+            
+            // Display key concepts found
+            if (analysis.key_concepts_found && analysis.key_concepts_found.length > 0) {
+                const conceptsDiv = document.createElement('div');
+                conceptsDiv.className = 'relevance-item';
+                conceptsDiv.innerHTML = `
+                    <div><strong>Key Concepts Found:</strong></div>
+                    <ul>
+                        ${analysis.key_concepts_found.map(c => `<li>${c}</li>`).join('')}
+                    </ul>
+                `;
+                container.appendChild(conceptsDiv);
+            }
+            
+            // Display missing information
+            if (analysis.missing_information && analysis.missing_information.length > 0) {
+                const missingDiv = document.createElement('div');
+                missingDiv.className = 'relevance-item';
+                missingDiv.innerHTML = `
+                    <div><strong>Missing Information:</strong></div>
+                    <ul>
+                        ${analysis.missing_information.map(m => `<li>${m}</li>`).join('')}
+                    </ul>
+                `;
+                container.appendChild(missingDiv);
+            }
+            
+            if (analysis.improvement_suggestions) {
+                const suggestionsDiv = document.createElement('div');
+                suggestionsDiv.innerHTML = `
+                    <h4>💡 Improvement Suggestions:</h4>
+                    <ul>
+                        ${analysis.improvement_suggestions.map(s => `<li>${s}</li>`).join('')}
+                    </ul>
+                `;
+                container.appendChild(suggestionsDiv);
+            }
+        }
+    </script>
+</body>
+</html>
+    

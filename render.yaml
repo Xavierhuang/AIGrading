@@ -3,7 +3,7 @@ services:
     name: ai-grading-system
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: python simple_grading_ui.py
+    startCommand: python rag_grading_ui.py
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0

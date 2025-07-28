@@ -1,107 +1,70 @@
-# 🎓 AI Grading System
+# AI Grading System
 
-A simple, powerful AI grading system for Ethics in the Workplace Midterm exams using OpenAI and Pinecone.
+A sophisticated AI-powered grading system that uses Retrieval-Augmented Generation (RAG) to evaluate student answers against textbook content and grading rubrics.
 
-## 🚀 Quick Start
+## Features
 
-### 1. Install Dependencies
-```bash
-python -m pip install flask pinecone-client openai tiktoken PyPDF2
-```
+- **RAG-Powered Grading**: Uses Pinecone vector database with hosted embeddings for accurate content retrieval
+- **Multi-Source Evaluation**: Combines textbook content and grading rubrics for comprehensive assessment
+- **Intelligent Context**: Automatically fetches relevant textbook material and rubric criteria
+- **Detailed Feedback**: Provides grades, scores, strengths, weaknesses, and improvement suggestions
+- **Web Interface**: User-friendly Flask web UI for easy interaction
 
-### 2. Set Up Your API Keys
-Create a `.env` file with your API keys:
-```
-PINECONE_API_KEY=your_pinecone_api_key
-OPENAI_API_KEY=your_openai_api_key
-```
+## Technology Stack
 
-### 3. Create Pinecone Index
-```bash
-python create_new_index.py
-```
+- **Backend**: Python Flask
+- **Vector Database**: Pinecone with hosted `llama-text-embed-v2` embeddings
+- **LLM**: OpenAI GPT-4o for answer synthesis and grading
+- **Text Processing**: PyPDF2 for PDF extraction and semantic chunking
 
-### 4. Process Textbook (Optional)
-```bash
-python improved_chunk_textbook.py
-```
+## Quick Start
 
-### 5. Add Grading Rubric
-```bash
-python add_grading_rubric_simple.py
-```
+1. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### 6. Start the Web UI
-```bash
-python simple_grading_ui.py
-```
+2. **Set Environment Variables**:
+   ```bash
+   export PINECONE_API_KEY="your_pinecone_api_key"
+   export OPENAI_API_KEY="your_openai_api_key"
+   ```
 
-Open your browser and go to: **http://localhost:5000**
+3. **Run the Grading UI**:
+   ```bash
+   python rag_grading_ui.py
+   ```
 
-## 📁 Project Structure
+4. **Access the Web Interface**:
+   Open your browser to `http://localhost:5002`
 
-### Core Files
-- `simple_grading_ui.py` - **Main web application** (UI + API + AI grading)
-- `improved_chunk_textbook.py` - Process textbook content for RAG
-- `add_grading_rubric_simple.py` - Upload grading rubric to Pinecone
-- `create_new_index.py` - Create Pinecone index
-- `test_simple_grading.py` - Test the AI grading system
+## Usage
 
-### Data Files
-- `BinderTextbooks_first300.pdf` - Textbook content
-- `textbook_chunking.log` - Processing logs
-- `templates/` - Web UI templates (auto-generated)
+1. Enter the question being graded
+2. Paste the student's answer
+3. Click "Grade Answer" to get comprehensive feedback
+4. Review the detailed evaluation including:
+   - Grade (A-F) and numerical score
+   - Strengths and areas for improvement
+   - Key points covered and missing
+   - Suggestions for enhancement
+   - Rubric criteria applied
 
-## 🎯 Features
+## Architecture
 
-- **🤖 AI-Powered Grading**: Uses GPT-4 with your specific rubric
-- **🔍 RAG Integration**: Searches relevant rubric content from Pinecone
-- **📊 Detailed Analysis**: Provides scores, feedback, strengths, and suggestions
-- **🎨 Beautiful UI**: Modern, responsive web interface
-- **⚡ Real-time**: Instant grading with loading animations
+The system uses a sophisticated RAG architecture:
+- **Content Indexing**: Textbook and rubric content are chunked and embedded in Pinecone
+- **Smart Retrieval**: Queries are routed to appropriate content sources
+- **Context Enhancement**: Explicit rubric fetching ensures grading criteria are always considered
+- **LLM Synthesis**: GPT-4o generates comprehensive evaluations using retrieved context
 
-## 🧪 Testing
+## Deployment
 
-Test the system with sample submissions:
-```bash
-python test_simple_grading.py
-```
+The system is configured for deployment on Render/Vercel with the updated `render.yaml` configuration.
 
-## 🔧 How It Works
+## Files
 
-1. **Textbook Processing**: Chunks and embeds textbook content in Pinecone
-2. **Rubric Upload**: Stores detailed grading criteria in Pinecone
-3. **Web UI**: Students submit responses through the web interface
-4. **AI Grading**: 
-   - Searches relevant rubric content from Pinecone
-   - Uses GPT-4 to analyze submissions against the rubric
-   - Returns comprehensive grades with detailed feedback
-
-## 🎓 Grading Criteria
-
-The system uses the Ethics in the Workplace Midterm rubric including:
-- **Short Answer Questions** (20 points)
-- **Theory Definition & Application** (15 points)
-- **Argument Development & Persuasiveness** (15 points)
-- **Variety & Integration of Theories** (10 points)
-- **Essay Structure & Clarity** (10 points)
-
-## 🛠️ Technology Stack
-
-- **Backend**: Flask (Python)
-- **AI**: OpenAI GPT-4 + text-embedding-3-large
-- **Vector Database**: Pinecone
-- **Frontend**: HTML/CSS/JavaScript
-- **Text Processing**: tiktoken, PyPDF2
-
-## 📝 Usage
-
-1. Start the web UI: `python simple_grading_ui.py`
-2. Open http://localhost:5000 in your browser
-3. Paste a student submission
-4. Click "Grade Submission"
-5. View comprehensive AI grading results
-
-## 🎉 Success!
-
-Your AI grading system is now ready to grade Ethics midterm submissions with professional-level analysis and feedback! 
+- `rag_grading_ui.py`: Main grading interface with RAG integration
+- `use_existing_index.py`: Core RAG system for content retrieval
+- `upload_grading_content.py`: Script for uploading rubrics and grading materials
+- `requirements.txt`: Python dependencies 
