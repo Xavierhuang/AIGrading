@@ -539,4 +539,4 @@ if __name__ == '__main__':
     print("🚀 Starting RAG Grading UI...")
     print("📱 Open your browser to: http://localhost:5002")
     print("🎓 Ready to grade student answers!")
-    app.run(host='0.0.0.0', port=5002, debug=True) 
+    app.run(debug=True) 

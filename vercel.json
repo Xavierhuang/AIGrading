@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "rag_grading_ui.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "rag_grading_ui.py"
+    }
+  ],
+  "env": {
+    "PYTHON_VERSION": "3.12"
+  }
+} 
