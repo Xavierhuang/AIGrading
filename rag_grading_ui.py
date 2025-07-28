@@ -180,6 +180,12 @@ if PINECONE_API_KEY and OPENAI_API_KEY:
         grading_system = None
 else:
     print("⚠️ Warning: Missing API keys. Grading functionality will be limited.")
+    print(f"PINECONE_API_KEY: {'Set' if PINECONE_API_KEY else 'Missing'}")
+    print(f"OPENAI_API_KEY: {'Set' if OPENAI_API_KEY else 'Missing'}")
+    if PINECONE_API_KEY:
+        print(f"PINECONE_API_KEY length: {len(PINECONE_API_KEY)}")
+    if OPENAI_API_KEY:
+        print(f"OPENAI_API_KEY length: {len(OPENAI_API_KEY)}")
 
 # Simple health check
 @app.route('/health')
@@ -197,6 +203,20 @@ def health():
 def test():
     """Test endpoint"""
     return jsonify({"message": "Flask app is working!"})
+
+# Debug endpoint
+@app.route('/debug')
+def debug():
+    """Debug endpoint to check environment variables"""
+    return jsonify({
+        "pinecone_api_key_set": bool(PINECONE_API_KEY),
+        "openai_api_key_set": bool(OPENAI_API_KEY),
+        "pinecone_key_length": len(PINECONE_API_KEY) if PINECONE_API_KEY else 0,
+        "openai_key_length": len(OPENAI_API_KEY) if OPENAI_API_KEY else 0,
+        "pinecone_key_start": PINECONE_API_KEY[:10] + "..." if PINECONE_API_KEY else "None",
+        "openai_key_start": OPENAI_API_KEY[:10] + "..." if OPENAI_API_KEY else "None",
+        "grading_system_initialized": grading_system is not None
+    })
 
 # Main grading endpoint
 @app.route('/grade', methods=['POST'])
