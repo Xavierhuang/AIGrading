@@ -25,8 +25,8 @@ def initialize_pinecone():
     """Initialize Pinecone client separately"""
     try:
         import pinecone
-        # Try the older initialization pattern for serverless compatibility
-        pc = pinecone.init(api_key=PINECONE_API_KEY)
+        # Use the newer Pinecone class pattern
+        pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
         print("✅ Pinecone client initialized successfully")
         return pc
     except Exception as e:
