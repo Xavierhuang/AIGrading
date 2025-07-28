@@ -18,24 +18,6 @@ load_dotenv()
 PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
-# Initialize Flask app
-app = Flask(__name__)
-
-# Initialize grading system only if API keys are available
-grading_system = None
-if PINECONE_API_KEY and OPENAI_API_KEY:
-    try:
-        grading_system = RAGGradingSystem()
-        print("✅ RAG Grading System initialized successfully")
-    except Exception as e:
-        print(f"❌ Failed to initialize RAG system: {e}")
-        grading_system = None
-else:
-    print("⚠️ Warning: Missing API keys. Grading functionality will be limited.")
-    print(f"PINECONE_API_KEY: {'Set' if PINECONE_API_KEY else 'Missing'}")
-    print(f"OPENAI_API_KEY: {'Set' if OPENAI_API_KEY else 'Missing'}")
-
-
 class RAGGradingSystem:
     def __init__(self):
         self.pc = Pinecone(api_key=PINECONE_API_KEY)
@@ -185,6 +167,23 @@ Be fair but rigorous. A grade of A should be for excellent answers, B for good, 
                 
         except Exception as e:
             return {"error": f"Grading failed: {e}"}
+
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize grading system only if API keys are available
+grading_system = None
+if PINECONE_API_KEY and OPENAI_API_KEY:
+    try:
+        grading_system = RAGGradingSystem()
+        print("✅ RAG Grading System initialized successfully")
+    except Exception as e:
+        print(f"❌ Failed to initialize RAG system: {e}")
+        grading_system = None
+else:
+    print("⚠️ Warning: Missing API keys. Grading functionality will be limited.")
+    print(f"PINECONE_API_KEY: {'Set' if PINECONE_API_KEY else 'Missing'}")
+    print(f"OPENAI_API_KEY: {'Set' if OPENAI_API_KEY else 'Missing'}")
 
 # HTML template
 HTML_TEMPLATE = """
