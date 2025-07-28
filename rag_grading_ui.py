@@ -26,10 +26,6 @@ class RAGGradingSystem:
         try:
             # Initialize Pinecone client with explicit configuration for serverless
             import pinecone
-            import pkg_resources
-            pinecone_version = pkg_resources.get_distribution("pinecone").version
-            print(f"🔍 Pinecone version: {pinecone_version}")
-            
             # Try different initialization patterns
             try:
                 self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
@@ -281,8 +277,11 @@ def version():
     """Check Pinecone version and initialization"""
     try:
         import pinecone
-        import pkg_resources
-        pinecone_version = pkg_resources.get_distribution("pinecone").version
+        # Try to get version without pkg_resources
+        try:
+            pinecone_version = pinecone.__version__
+        except AttributeError:
+            pinecone_version = "unknown"
         
         # Try to initialize Pinecone
         try:
