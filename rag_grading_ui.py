@@ -26,17 +26,8 @@ class RAGGradingSystem:
         try:
             # Initialize Pinecone client with explicit configuration for serverless
             import pinecone
-            # Try different initialization patterns
-            try:
-                self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
-                print("✅ Used pinecone.Pinecone() initialization")
-            except TypeError as e:
-                if "proxies" in str(e):
-                    # Fallback to older initialization pattern
-                    print("⚠️ Falling back to pinecone.init() initialization")
-                    self.pc = pinecone.init(api_key=PINECONE_API_KEY)
-                else:
-                    raise e
+            # Simple initialization without fallback
+            self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
             self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
             self.index_name = "aiprofessors"
             print("✅ Pinecone and OpenAI clients initialized successfully")
