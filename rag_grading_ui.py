@@ -18,9 +18,23 @@ load_dotenv()
 PINECONE_API_KEY = os.environ.get('PINECONE_API_KEY')
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
-if not PINECONE_API_KEY or not OPENAI_API_KEY:
-    print("❌ Error: Please set PINECONE_API_KEY and OPENAI_API_KEY environment variables")
-    exit(1)
+# Initialize Flask app
+app = Flask(__name__)
+
+# Initialize grading system only if API keys are available
+grading_system = None
+if PINECONE_API_KEY and OPENAI_API_KEY:
+    try:
+        grading_system = RAGGradingSystem()
+        print("✅ RAG Grading System initialized successfully")
+    except Exception as e:
+        print(f"❌ Failed to initialize RAG system: {e}")
+        grading_system = None
+else:
+    print("⚠️ Warning: Missing API keys. Grading functionality will be limited.")
+    print(f"PINECONE_API_KEY: {'Set' if PINECONE_API_KEY else 'Missing'}")
+    print(f"OPENAI_API_KEY: {'Set' if OPENAI_API_KEY else 'Missing'}")
+
 
 class RAGGradingSystem:
     def __init__(self):
@@ -171,12 +185,6 @@ Be fair but rigorous. A grade of A should be for excellent answers, B for good, 
                 
         except Exception as e:
             return {"error": f"Grading failed: {e}"}
-
-# Initialize the grading system
-grading_system = RAGGradingSystem()
-
-# Flask app
-app = Flask(__name__)
 
 # HTML template
 HTML_TEMPLATE = """
@@ -520,6 +528,14 @@ def index():
 @app.route('/grade', methods=['POST'])
 def grade():
     try:
+        if not grading_system:
+            return jsonify({
+                "error": "Grading system not initialized. Please check API keys.",
+                "grade": "F",
+                "score": 0,
+                "feedback": "System error: Grading system unavailable."
+            })
+        
         data = request.get_json()
         question = data.get('question', '')
         student_answer = data.get('student_answer', '')
@@ -535,6 +551,19 @@ def grade():
     except Exception as e:
         return jsonify({"error": f"Server error: {str(e)}"})
 
+# For Vercel deployment - export the app
+app.debug = False
+
+# Add error handling for Vercel
+@app.errorhandler(500)
+def internal_error(error):
+    return jsonify({"error": "Internal server error", "details": str(error)}), 500
+
+@app.errorhandler(404)
+def not_found(error):
+    return jsonify({"error": "Not found"}), 404
+
+# Only run locally if not on Vercel
 if __name__ == '__main__':
     print("🚀 Starting RAG Grading UI...")
     print("📱 Open your browser to: http://localhost:5002")
