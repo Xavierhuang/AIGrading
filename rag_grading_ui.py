@@ -21,18 +21,27 @@ OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 # Initialize Flask app
 app = Flask(__name__)
 
+def initialize_pinecone():
+    """Initialize Pinecone client separately"""
+    try:
+        import pinecone
+        pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
+        print("✅ Pinecone client initialized successfully")
+        return pc
+    except Exception as e:
+        print(f"❌ Failed to initialize Pinecone: {e}")
+        raise e
+
 class RAGGradingSystem:
     def __init__(self):
         try:
-            # Initialize Pinecone client with explicit configuration for serverless
-            import pinecone
-            # Simple initialization without fallback
-            self.pc = pinecone.Pinecone(api_key=PINECONE_API_KEY)
+            # Initialize clients separately
+            self.pc = initialize_pinecone()
             self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
             self.index_name = "aiprofessors"
-            print("✅ Pinecone and OpenAI clients initialized successfully")
+            print("✅ RAG Grading System initialized successfully")
         except Exception as e:
-            print(f"❌ Failed to initialize clients: {e}")
+            print(f"❌ Failed to initialize RAG system: {e}")
             print(f"❌ Error type: {type(e).__name__}")
             import traceback
             print(f"❌ Full traceback: {traceback.format_exc()}")
