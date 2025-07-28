@@ -11,10 +11,5 @@
       "src": "/(.*)",
       "dest": "/rag_grading_ui.py"
     }
-  ],
-  "functions": {
-    "rag_grading_ui.py": {
-      "maxDuration": 60
-    }
-  }
+  ]
 } 
